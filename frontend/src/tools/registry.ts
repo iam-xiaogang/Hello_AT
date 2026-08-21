@@ -1,0 +1,29 @@
+import JsonFormatter from "./json-formatter";
+import { meta as jsonFormatter } from "./json-formatter/meta";
+import dailyNews from "./news";
+import { meta as news } from "./news/meta";
+import EnglishLearning from "./english-learning";
+import { meta as englishLearning } from "./english-learning/meta";
+import Base64Codec from "./base64";
+import { meta as base64 } from "./base64/meta";
+import ImageCompressor from "./image-compressor";
+import { meta as imageCompressor } from "./image-compressor/meta";
+import type { ToolDefinition } from "./types";
+
+// This is the sole front-end registration point. To add a tool, create its
+// directory (index.tsx + meta.ts) and add one entry here; navigation, welcome
+// cards and routes below are all generated from this same source of truth.
+export const tools: ToolDefinition[] = [
+  { meta: jsonFormatter, Component: JsonFormatter },
+  { meta: base64, Component: Base64Codec },
+  { meta: imageCompressor, Component: ImageCompressor },
+  { meta: news, Component: dailyNews },
+  { meta: englishLearning, Component: EnglishLearning },
+];
+
+export const toolsByCategory = Object.entries(
+  tools.reduce<Record<string, ToolDefinition[]>>((groups, tool) => {
+    (groups[tool.meta.category] ??= []).push(tool);
+    return groups;
+  }, {}),
+);

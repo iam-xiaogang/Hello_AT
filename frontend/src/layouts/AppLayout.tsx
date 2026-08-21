@@ -1,0 +1,6 @@
+import { Menu, Search, Settings, Wrench } from "lucide-react";
+import { Outlet } from "react-router-dom";
+import { Sidebar } from "../components/Sidebar";
+import { useUiStore } from "../state/ui";
+
+export function AppLayout() { const setSidebarOpen = useUiStore((s) => s.setSidebarOpen); return <div className="flex min-h-screen"><Sidebar/><div className="min-w-0 flex-1"><header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-7"><div className="flex items-center gap-3"><button className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden" aria-label="打开菜单" onClick={() => setSidebarOpen(true)}><Menu size={20}/></button><div className="flex items-center gap-2 font-semibold"><span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white"><Wrench size={17}/></span>Toolbox</div></div><div className="flex items-center gap-1 text-slate-500"><button className="rounded-lg p-2 hover:bg-slate-100" aria-label="搜索（即将推出）"><Search size={19}/></button><button className="rounded-lg p-2 hover:bg-slate-100" aria-label="设置（即将推出）"><Settings size={19}/></button></div></header><main className="mx-auto max-w-6xl p-5 sm:p-8"><Outlet/></main></div></div>; }
