@@ -9,4 +9,5 @@ export const meta: ToolMeta = {
   category: "学习成长",
   path: "/tools/english-learning",
   kind: "needs-backend",
+  externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "http://154.36.185.251:8501/english-learning",
 };

@@ -1,31 +1,28 @@
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { RefreshCw } from "lucide-react";
+import { meta } from "./meta";
 
-// Vite proxies this path to the separately maintained Flask service. Keeping
-// it same-origin avoids iframe restrictions and preserves its /api/lookup API.
-// const newsDashboardUrl = import.meta.env.VITE_DAILY_NEWS_URL || "/news-agent/";
-const newsDashboardUrl = "http://154.36.185.251:5001";
 export default function DailyNews() {
+  const [frameKey, setFrameKey] = useState(0);
   return (
-    <section className="flex min-h-[calc(100vh-8.5rem)] flex-col gap-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold">Daily News</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="rounded-lg border border-slate-300 p-2.5 text-slate-600 hover:bg-slate-50" onClick={() => window.location.reload()} aria-label="刷新页面">
-            <RefreshCw size={17} />
-          </button>
-          <a className="btn" href={newsDashboardUrl} target="_blank" rel="noreferrer">
-            <ExternalLink size={17} />独立打开
-          </a>
-        </div>
+    <section className="relative flex min-h-0 flex-1 flex-col">
+      <button
+        className="absolute right-4 top-4 z-10 rounded-lg border border-slate-300 bg-white p-2.5 text-slate-600 shadow-sm hover:bg-slate-50"
+        onClick={() => setFrameKey((k) => k + 1)}
+        aria-label="刷新页面"
+        title="刷新页面"
+      >
+        <RefreshCw size={17} />
+      </button>
+      <div className="panel flex min-h-0 flex-1 overflow-hidden bg-white">
+        <iframe
+          key={frameKey}
+          title="Daily News dashboard"
+          src={meta.externalUrl}
+          className="h-full w-full border-0"
+          allow="clipboard-read; clipboard-write"
+        />
       </div>
-
-      <div className="panel min-h-[720px] flex-1 overflow-hidden bg-white">
-        <iframe title="Daily News dashboard" src={newsDashboardUrl} className="h-full min-h-[720px] w-full border-0" allow="clipboard-read; clipboard-write" />
-      </div>
-
-      {/* <p className="text-xs text-slate-400">若看板未出现，请先在 news_agent 目录启动网页服务：<code>python main.py --serve</code>。</p> */}
     </section>
   );
 }

@@ -1,34 +1,27 @@
-import { ExternalLink, RefreshCw } from "lucide-react";
-
-// The default is a same-origin Vite proxy to Streamlit. A public deployment
-// can override it without changing the tool source.
-// const englishLearningUrl = import.meta.env.VITE_ENGLISH_LEARNING_URL || "/english-learning/";
-const englishLearningUrl =  "http://154.36.185.251:8501/english-learning";
+import { useState } from "react";
+import { RefreshCw } from "lucide-react";
+import { meta } from "./meta";
 
 export default function EnglishLearning() {
+  const [frameKey, setFrameKey] = useState(0);
   return (
-    <section className="flex min-h-[calc(100vh-8.5rem)] flex-col gap-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold">英语学习</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="rounded-lg border border-slate-300 p-2.5 text-slate-600 hover:bg-slate-50" onClick={() => window.location.reload()} aria-label="刷新页面">
-            <RefreshCw size={17} />
-          </button>
-          <a className="btn" href={englishLearningUrl} target="_blank" rel="noreferrer">
-            <ExternalLink size={17} />独立打开
-          </a>
-        </div>
+    <section className="relative flex min-h-0 flex-1 flex-col">
+      <button
+        className="absolute right-4 top-4 z-10 rounded-lg border border-slate-300 bg-white p-2.5 text-slate-600 shadow-sm hover:bg-slate-50"
+        onClick={() => setFrameKey((k) => k + 1)}
+        aria-label="刷新页面"
+        title="刷新页面"
+      >
+        <RefreshCw size={17} />
+      </button>
+      <div className="panel flex min-h-0 flex-1 overflow-hidden bg-white">
+        <iframe
+          key={frameKey}
+          title="AI English Teacher"
+          src={meta.externalUrl}
+          className="h-full w-full border-0"
+        />
       </div>
-
-      <div className="panel min-h-[780px] flex-1 overflow-hidden bg-white">
-        <iframe title="AI English Teacher" src={englishLearningUrl} className="h-full min-h-[780px] w-full border-0" />
-      </div>
-
-      {/* <p className="text-xs text-slate-400">
-        若页面未出现，请按 README 中的命令以 <code>/english-learning</code> 路径启动 Streamlit 服务。
-      </p> */}
     </section>
   );
 }

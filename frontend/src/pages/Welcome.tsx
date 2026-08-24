@@ -4,7 +4,7 @@ import { tools } from "../tools/registry";
 
 export default function Welcome() {
   return (
-    <section>
+    <section className="mx-auto w-full max-w-6xl p-5 sm:p-8">
       <h1 className="sr-only">工具箱</h1>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {tools.map(({ meta }) => {
