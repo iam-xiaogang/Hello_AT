@@ -1,5 +1,31 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Server } from "lucide-react";
+import { Server } from "lucide-react";
 import { tools } from "../tools/registry";
 
-export default function Welcome() { return <section><div className="mb-9 max-w-2xl"><p className="mb-3 text-sm font-semibold text-indigo-600">高效、轻量、可扩展</p><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">你的日常工具箱</h1><p className="mt-3 leading-7 text-slate-600">选择一个工具即可开始。纯前端工具会在本地运行；需要服务端的工具会清晰标记。</p></div><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{tools.map(({ meta }) => { const Icon = meta.icon; return <Link key={meta.id} to={meta.path} className="panel group p-5 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"><div className="flex items-start justify-between"><span className="rounded-lg bg-slate-100 p-2.5 text-slate-700 group-hover:bg-indigo-50 group-hover:text-indigo-600"><Icon size={20}/></span>{meta.kind === "needs-backend" && <Server size={16} className="text-emerald-500" aria-label="需要后端"/>}</div><h2 className="mt-5 font-semibold">{meta.name}</h2><p className="mt-1 min-h-10 text-sm leading-5 text-slate-500">{meta.description}</p><span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-indigo-600">打开工具 <ArrowRight size={15}/></span></Link>; })}</div></section>; }
+export default function Welcome() {
+  return (
+    <section>
+      <h1 className="sr-only">工具箱</h1>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {tools.map(({ meta }) => {
+          const Icon = meta.icon;
+          return (
+            <Link
+              key={meta.id}
+              to={meta.path}
+              className="panel group flex items-center gap-4 p-5 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+            >
+              <span className="rounded-lg bg-slate-100 p-2.5 text-slate-700 group-hover:bg-indigo-50 group-hover:text-indigo-600">
+                <Icon size={20} />
+              </span>
+              <span className="flex min-w-0 items-center gap-2 font-semibold">
+                {meta.name}
+                {meta.kind === "needs-backend" && <Server size={14} className="shrink-0 text-emerald-500" aria-label="需要后端" />}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
