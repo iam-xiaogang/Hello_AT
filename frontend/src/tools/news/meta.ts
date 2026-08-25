@@ -12,5 +12,5 @@ export const meta: ToolMeta = {
   // Same-origin path, proxied by nginx/Vite to the external Flask service.
   // This avoids the browser blocking an http:// iframe inside an https page
   // (mixed content). Override with VITE_DAILY_NEWS_URL for a public URL.
-  externalUrl: import.meta.env.VITE_DAILY_NEWS_URL || "/news/",
+  externalUrl: import.meta.env.VITE_DAILY_NEWS_URL || "http://154.36.185.251:5001",
 };
