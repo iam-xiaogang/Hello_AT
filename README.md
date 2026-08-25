@@ -48,6 +48,16 @@ npm run dev
 
 打开 `http://localhost:5173`。Vite 会把 `/api` 请求代理到 `http://localhost:8000`；后端也已允许该来源的 CORS 请求。
 
+### 构建后本地预览
+
+```bash
+cd frontend
+npm run build
+npm run preview
+```
+
+打开 `http://localhost:4173`。`vite.config.ts` 中 `preview.proxy` 与 `server.proxy` 共用同一份代理配置，因此构建产物访问 `/api` 时同样会转发到 `http://localhost:8000`（需先启动后端）。若用 Nginx 等其他静态服务器托管 `dist/`，需自行配置 `/api` 反向代理（参考 `nginx.conf`）。
+
 ## Dockerß
 
 ```bash
