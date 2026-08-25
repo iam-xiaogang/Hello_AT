@@ -10,6 +10,8 @@ import ImageCompressor from "./image-compressor";
 import { meta as imageCompressor } from "./image-compressor/meta";
 import DocConverter from "./doc-converter";
 import { meta as docConverter } from "./doc-converter/meta";
+import Blog from "./blog";
+import { meta as blog } from "./blog/meta";
 import type { ToolDefinition } from "./types";
 
 // This is the sole front-end registration point. To add a tool, create its
@@ -22,10 +24,11 @@ export const tools: ToolDefinition[] = [
   { meta: docConverter, Component: DocConverter },
   { meta: news, Component: dailyNews },
   { meta: englishLearning, Component: EnglishLearning },
+  { meta: blog, Component: Blog },
 ];
 
-// AI tools lead the sidebar regardless of their registration order below.
-const CATEGORY_PRIORITY = ["AI 工具"];
+// AI tools and the blog lead the sidebar regardless of their registration order below.
+const CATEGORY_PRIORITY = ["AI 工具", "博客"];
 
 export const toolsByCategory = Object.entries(
   tools.reduce<Record<string, ToolDefinition[]>>((groups, tool) => {
