@@ -77,3 +77,4 @@ docker compose up --build
 - JSON 格式化/校验：纯前端。
 - Base64 编码解码：纯前端。
 - 图片压缩：上传 JPEG、PNG、WebP 到 FastAPI，经 Pillow 压缩并下载，覆盖前后端联调、上传、加载及错误提示流程。
+- 文档转换：PDF → Word（保留排版）、PDF → 文本、Word → 文本，上传至 FastAPI 经 pdf2docx / PyMuPDF / python-docx 转换并下载。

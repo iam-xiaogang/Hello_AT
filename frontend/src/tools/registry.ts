@@ -8,6 +8,8 @@ import Base64Codec from "./base64";
 import { meta as base64 } from "./base64/meta";
 import ImageCompressor from "./image-compressor";
 import { meta as imageCompressor } from "./image-compressor/meta";
+import DocConverter from "./doc-converter";
+import { meta as docConverter } from "./doc-converter/meta";
 import type { ToolDefinition } from "./types";
 
 // This is the sole front-end registration point. To add a tool, create its
@@ -17,13 +19,21 @@ export const tools: ToolDefinition[] = [
   { meta: jsonFormatter, Component: JsonFormatter },
   { meta: base64, Component: Base64Codec },
   { meta: imageCompressor, Component: ImageCompressor },
+  { meta: docConverter, Component: DocConverter },
   { meta: news, Component: dailyNews },
   { meta: englishLearning, Component: EnglishLearning },
 ];
+
+// AI tools lead the sidebar regardless of their registration order below.
+const CATEGORY_PRIORITY = ["AI 工具"];
 
 export const toolsByCategory = Object.entries(
   tools.reduce<Record<string, ToolDefinition[]>>((groups, tool) => {
     (groups[tool.meta.category] ??= []).push(tool);
     return groups;
   }, {}),
-);
+).sort(([a], [b]) => {
+  const ia = CATEGORY_PRIORITY.indexOf(a);
+  const ib = CATEGORY_PRIORITY.indexOf(b);
+  return (ia === -1 ? CATEGORY_PRIORITY.length : ia) - (ib === -1 ? CATEGORY_PRIORITY.length : ib);
+});

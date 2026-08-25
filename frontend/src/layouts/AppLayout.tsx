@@ -38,7 +38,7 @@ export function AppLayout() {
             )}
           </div>
           <div className="flex items-center gap-1 text-slate-500">
-            {tool && (
+            {/* {tool && (
               <a
                 className="mr-1 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                 href={tool.meta.externalUrl ?? tool.meta.path}
@@ -48,7 +48,7 @@ export function AppLayout() {
                 <ExternalLink size={15} />
                 <span className="hidden sm:inline">独立打开</span>
               </a>
-            )}
+            )} */}
             <button className="rounded-lg p-2 hover:bg-slate-100" aria-label="搜索（即将推出）">
               <Search size={19} />
             </button>
