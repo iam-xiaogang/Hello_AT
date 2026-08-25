@@ -9,5 +9,6 @@ export const meta: ToolMeta = {
   category: "AI 工具",
   path: "/tools/english-learning",
   kind: "needs-backend",
-  externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "http://154.36.185.251:8501/english-learning",
+  // externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "http://154.36.185.251:8501/english-learning",
+  externalUrl: "http://154.36.185.251:8501/english-learning",
 };
