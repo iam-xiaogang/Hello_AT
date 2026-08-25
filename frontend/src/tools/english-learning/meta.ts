@@ -12,6 +12,7 @@ export const meta: ToolMeta = {
   // Same-origin path, proxied by nginx/Vite to the external Streamlit service.
   // This avoids the browser blocking an http:// iframe inside an https page
   // (mixed content). Override with VITE_ENGLISH_LEARNING_URL for a public URL.
-  externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "http://154.36.185.251:8501/english-learning",
+  // externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "http://154.36.185.251:8501/english-learning",
+  externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "/english-learning/",
   
 };
