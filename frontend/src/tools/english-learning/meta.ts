@@ -9,6 +9,8 @@ export const meta: ToolMeta = {
   category: "AI 工具",
   path: "/tools/english-learning",
   kind: "needs-backend",
-  // externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "http://154.36.185.251:8501/english-learning",
-  externalUrl: "http://154.36.185.251:8501/english-learning",
+  // Same-origin path, proxied by nginx/Vite to the external Streamlit service.
+  // This avoids the browser blocking an http:// iframe inside an https page
+  // (mixed content). Override with VITE_ENGLISH_LEARNING_URL for a public URL.
+  externalUrl: import.meta.env.VITE_ENGLISH_LEARNING_URL || "/english-learning/",
 };

@@ -7,19 +7,19 @@ import react from "@vitejs/plugin-react";
 // built app hit the static server and never reach FastAPI.
 const proxy = {
   "/api": "http://localhost:8000",
-  // Keep the externally maintained Flask news dashboard same-origin with
-  // Toolbox. Its own `/api/lookup` request therefore becomes
-  // `/news-agent/api/lookup` and is transparently forwarded to Flask.
-  "/news-agent": {
-    target: "http://127.0.0.1:5000",
+  // Same-origin proxy for the externally maintained Flask news dashboard.
+  // Keeping it under Toolbox's own origin avoids the browser blocking an
+  // http:// iframe inside an https page (mixed content).
+  "/news": {
+    target: "http://154.36.185.251:5001",
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/news-agent/, ""),
+    rewrite: (path) => path.replace(/^\/news/, ""),
   },
-  // Streamlit uses a WebSocket for interactivity. Start it with
-  // --server.baseUrlPath=english-learning so its assets stay under this
-  // proxy path as well.
+  // Same-origin proxy for the Streamlit English-learning app. Streamlit uses
+  // a WebSocket for interactivity, hence ws: true. The remote service serves
+  // under its /english-learning base path, which is preserved by this rule.
   "/english-learning": {
-    target: "http://127.0.0.1:8501",
+    target: "http://154.36.185.251:8501",
     changeOrigin: true,
     ws: true,
   },
