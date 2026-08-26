@@ -9,9 +9,9 @@ export const meta: ToolMeta = {
   category: "AI 工具",
   path: "/tools/news",
   kind: "needs-backend",
+  accent: "from-emerald-400 to-teal-500",
   // Same-origin path, proxied by nginx/Vite to the external Flask service.
   // This avoids the browser blocking an http:// iframe inside an https page
   // (mixed content). Override with VITE_DAILY_NEWS_URL for a public URL.
-  // externalUrl: import.meta.env.VITE_DAILY_NEWS_URL || "http://154.36.185.251:5001",
   externalUrl: import.meta.env.VITE_DAILY_NEWS_URL || "/news/",
 };

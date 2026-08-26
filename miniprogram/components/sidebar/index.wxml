@@ -1,0 +1,25 @@
+<view class="mask {{visible ? 'mask-show' : ''}}" bindtap="close" catchtouchmove="noop">
+  <view class="drawer {{visible ? 'drawer-show' : ''}}" catchtap="noop" catchtouchmove="noop">
+    <view class="drawer-header">
+      <text class="drawer-title">工具箱</text>
+      <view class="drawer-close" bindtap="close">✕</view>
+    </view>
+    <scroll-view scroll-y class="drawer-body">
+      <view class="group" wx:for="{{categories}}" wx:key="name" wx:for-item="group">
+        <view class="group-title">{{group.name}}</view>
+        <view
+          class="tool-item"
+          wx:for="{{group.items}}"
+          wx:key="id"
+          bindtap="openTool"
+          data-url="{{item.url}}"
+        >
+          <view class="tool-chip" style="background: linear-gradient(135deg, {{item.color1}}, {{item.color2}});">
+            <text class="tool-chip-icon">{{item.icon}}</text>
+          </view>
+          <text class="tool-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/json/index",
+    "pages/base64/index",
+    "pages/compress/index",
+    "pages/convert/index",
+    "pages/webview/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#7c3aed",
+    "navigationBarTitleText": "Toolbox 工具箱",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f7f5ff"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -9,4 +9,5 @@ export const meta: ToolMeta = {
   category: "文件工具",
   path: "/tools/doc-converter",
   kind: "needs-backend",
+  accent: "from-teal-400 to-cyan-500",
 };

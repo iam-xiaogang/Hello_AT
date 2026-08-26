@@ -1,0 +1,117 @@
+.mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 900;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.mask-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 520rpx;
+  max-width: 84vw;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #ede9fe 0%, #ffffff 40%, #f0f9ff 100%);
+  box-shadow: 8rpx 0 40rpx rgba(139, 92, 246, 0.25);
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+}
+
+.drawer-show {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 110rpx;
+  padding: 0 32rpx;
+  border-bottom: 2rpx solid rgba(255, 255, 255, 0.8);
+  background: linear-gradient(90deg, #8b5cf6, #6366f1, #38bdf8);
+}
+
+.drawer-title {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.drawer-close {
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  color: #ffffff;
+  font-size: 30rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16rpx;
+}
+
+.drawer-body {
+  flex: 1;
+  height: 0;
+  padding: 24rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.group {
+  margin-bottom: 32rpx;
+}
+
+.group-title {
+  padding: 0 16rpx;
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+}
+
+.tool-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  border-radius: 20rpx;
+}
+
+.tool-item:active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.tool-chip {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(139, 92, 246, 0.25);
+}
+
+.tool-chip-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.tool-name {
+  font-size: 28rpx;
+  color: #334155;
+  font-weight: 500;
+}

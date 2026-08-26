@@ -23,6 +23,8 @@ frontend/
       json-formatter/       # index.tsx + meta.ts
       base64/                # index.tsx + meta.ts
       image-compressor/     # index.tsx + meta.ts
+miniprogram/                # 微信小程序端（与 Web 共用后端 API）
+  app.js app.json config.js utils/ pages/
 docker-compose.yml
 ```
 

@@ -1,0 +1,11 @@
+<view class="page">
+  <view class="card">
+    <text class="label">JSON 内容</text>
+    <textarea class="textarea" value="{{value}}" bindinput="onInput" maxlength="-1" />
+    <view class="row">
+      <button class="btn" size="mini" bindtap="format">格式化并校验</button>
+      <button class="btn-secondary" size="mini" bindtap="minify">压缩</button>
+    </view>
+    <view class="err" wx:if="{{error}}">{{error}}</view>
+  </view>
+</view>

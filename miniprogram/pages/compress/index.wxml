@@ -1,0 +1,24 @@
+<view class="page">
+  <view class="card">
+    <text class="label">选择图片（仅 JPG）</text>
+    <button class="btn" bindtap="chooseImage">选择图片</button>
+    <image wx:if="{{src}}" src="{{src}}" mode="aspectFit" class="preview" />
+
+    <block wx:if="{{src}}">
+      <view class="mt">
+        <text class="label">压缩质量：{{quality}}</text>
+        <slider min="1" max="100" value="{{quality}}" bindchange="onQuality" show-value />
+      </view>
+      <view class="row">
+        <button class="btn" bindtap="compress" disabled="{{busy || !src}}">{{busy ? "压缩中…" : "开始压缩"}}</button>
+      </view>
+      <view class="hint mt" wx:if="{{resultPath}}">压缩完成{{sizeText ? "，约 " + sizeText : ""}}</view>
+      <view class="row" wx:if="{{resultPath}}">
+        <button class="btn-secondary" bindtap="preview">预览</button>
+        <button class="btn-secondary" bindtap="save">保存到相册</button>
+      </view>
+    </block>
+
+    <view class="err" wx:if="{{error}}">{{error}}</view>
+  </view>
+</view>

@@ -9,5 +9,6 @@ export const meta: ToolMeta = {
   category: "博客",
   path: "/tools/blog",
   kind: "needs-backend",
+  accent: "from-violet-400 to-purple-500",
   externalUrl: "https://iamxiaogang.cn/",
 };

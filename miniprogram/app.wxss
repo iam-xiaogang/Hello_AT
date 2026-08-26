@@ -1,0 +1,102 @@
+page {
+  /* 冷暖平衡的多巴胺底色：紫、靛、粉、天蓝四个径向光斑叠加 */
+  background:
+    radial-gradient(1100rpx 560rpx at 8% -10%, rgba(167, 139, 250, 0.16), transparent 60%),
+    radial-gradient(1000rpx 520rpx at 108% 8%, rgba(129, 140, 248, 0.15), transparent 60%),
+    radial-gradient(900rpx 480rpx at 50% 112%, rgba(232, 121, 249, 0.1), transparent 60%),
+    radial-gradient(700rpx 400rpx at 85% 55%, rgba(56, 189, 248, 0.12), transparent 55%),
+    #f7f5ff;
+  color: #0f172a;
+  font-size: 28rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin: 24rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4rpx 24rpx rgba(139, 92, 246, 0.1);
+}
+
+.label {
+  display: block;
+  font-size: 26rpx;
+  color: #475569;
+  margin-bottom: 12rpx;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 2rpx solid #e2e8f0;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  min-height: 300rpx;
+}
+
+.btn {
+  background: linear-gradient(90deg, #8b5cf6, #6366f1, #38bdf8);
+  color: #ffffff;
+  border-radius: 16rpx;
+  padding: 16rpx 40rpx;
+  font-size: 30rpx;
+  text-align: center;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(139, 92, 246, 0.3);
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 2rpx solid #cbd5e1;
+  border-radius: 16rpx;
+  padding: 14rpx 40rpx;
+  font-size: 30rpx;
+  text-align: center;
+}
+
+.err {
+  color: #e11d48;
+  font-size: 26rpx;
+  margin-top: 16rpx;
+}
+
+.hint {
+  color: #94a3b8;
+  font-size: 24rpx;
+}
+
+.row {
+  display: flex;
+  margin-top: 24rpx;
+}
+
+/* 兼容部分不支持 flex gap 的 WebView：用 margin 实现间距 */
+.row > view,
+.row > button,
+.row > text {
+  margin-right: 20rpx;
+}
+
+.row > view:last-child,
+.row > button:last-child,
+.row > text:last-child {
+  margin-right: 0;
+}
+
+.mt {
+  margin-top: 24rpx;
+}
+
+/* iPhone 底部安全区 */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
