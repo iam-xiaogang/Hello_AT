@@ -12,6 +12,8 @@ import DocConverter from "./doc-converter";
 import { meta as docConverter } from "./doc-converter/meta";
 import Blog from "./blog";
 import { meta as blog } from "./blog/meta";
+import VisitorTracker from "./visitor-tracker";
+import { meta as visitorTracker } from "./visitor-tracker/meta";
 import type { ToolDefinition } from "./types";
 
 // This is the sole front-end registration point. To add a tool, create its
@@ -25,6 +27,7 @@ export const tools: ToolDefinition[] = [
   { meta: news, Component: dailyNews },
   { meta: englishLearning, Component: EnglishLearning },
   { meta: blog, Component: Blog },
+  { meta: visitorTracker, Component: VisitorTracker },
 ];
 
 // AI tools and the blog lead the sidebar regardless of their registration order below.

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ExternalLink, Menu, Search, Settings, Wrench } from "lucide-react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
@@ -9,6 +10,11 @@ export function AppLayout() {
   const location = useLocation();
   const tool = tools.find((t) => t.meta.path === location.pathname);
   const Icon = tool?.meta.icon;
+
+  // 访问埋点：每次页面加载记录一次访问者（IP/时间/省份），失败静默忽略。
+  useEffect(() => {
+    fetch("/api/tools/visitor-tracker/record", { method: "POST", keepalive: true }).catch(() => {});
+  }, []);
 
   return (
     <div className="flex min-h-screen">

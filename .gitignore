@@ -7,3 +7,5 @@ __pycache__/
 vite.config.js
 vite.config.d.ts
 miniprogram/project.private.config.json
+# 运行时数据库（backend/data/toolbox.db）
+backend/data/
