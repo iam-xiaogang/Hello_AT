@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { MapPin, RefreshCw, Users } from "lucide-react";
 import { apiFetch } from "../../api/client";
+import { ChinaMap } from "./ChinaMap";
 
 interface Visitor {
   ip: string;
@@ -75,8 +76,6 @@ export default function VisitorTracker() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const maxVisitors = Math.max(1, ...(summary?.provinces.map((p) => p.visitors) ?? []));
-
   return (
     <section className="flex flex-1 flex-col gap-4 p-5 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -113,26 +112,12 @@ export default function VisitorTracker() {
         />
       </div>
 
-      <div className="panel flex flex-col gap-3 p-5">
-        <p className="label">省份分布（按去重访问者数）</p>
-        {!summary || summary.provinces.length === 0 ? (
-          <p className="text-sm text-slate-400">暂无数据，等待访问者到来……</p>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            {summary.provinces.map((p) => (
-              <div key={p.province} className="flex items-center gap-3">
-                <span className="w-16 shrink-0 text-right text-sm text-slate-600">{p.province}</span>
-                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-orange-400 to-rose-500"
-                    style={{ width: `${Math.max(4, (p.visitors / maxVisitors) * 100)}%` }}
-                  />
-                </div>
-                <span className="w-12 shrink-0 text-sm font-medium text-slate-700">{p.visitors} 人</span>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="panel flex flex-col gap-2 p-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <p className="label mb-0">省份分布（中国地图）</p>
+          <p className="text-xs text-slate-400">有色省份 = 有访问记录（各省颜色不同），白色 = 暂无访问；可拖动/缩放</p>
+        </div>
+        <ChinaMap provinces={summary?.provinces ?? []} />
       </div>
 
       <div className="panel overflow-hidden">
