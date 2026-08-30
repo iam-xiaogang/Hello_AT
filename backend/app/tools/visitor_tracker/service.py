@@ -1,7 +1,9 @@
-"""访问者统计核心逻辑：IP 定位（离线 ip2region）+ SQLite 访问历史。
+"""访问者统计核心逻辑。
 
-定位完全离线进行（数据文件随仓库分发），不依赖任何外部 API，
-适合部署在内网或中国大陆的服务器。
+两种数据源：
+1. 远程模式（默认，配置了 TOOLBOX_VISITOR_API_BASE 时）：代理到 h3blog 的
+   /api/visitor/* 接口，跨项目共享访问数据（IP 定位与存储都在 h3blog 侧）。
+2. 本地兜底（未配置远程地址时）：ip2region 离线定位 + SQLite 访问历史。
 """
 
 import sqlite3
@@ -10,15 +12,19 @@ from pathlib import Path
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from fastapi import Request
+import httpx
+from fastapi import HTTPException, Request, status
 
 import ip2region.util as ip2r_util
 from ip2region.searcher import new_with_buffer
 
+from app.core.config import settings
 from app.db import get_connection
 
 XDB_PATH = Path(__file__).resolve().parent / "data" / "ip2region_v4.xdb"
 CN_TZ = ZoneInfo("Asia/Shanghai")
+
+_REMOTE_TIMEOUT = 8.0
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS visitors (
@@ -78,6 +84,54 @@ def extract_client_ip(request: Request) -> str:
     return ""
 
 
+# ---------------------------------------------------------------------------
+# 远程模式：代理到 h3blog 的 /api/visitor/*
+# ---------------------------------------------------------------------------
+
+def _remote_enabled() -> bool:
+    return bool(settings.visitor_api_base)
+
+
+def _remote_url(path: str) -> str:
+    return settings.visitor_api_base.rstrip("/") + path
+
+
+def _remote_record(ip: str) -> Optional[dict[str, str]]:
+    """把访问转发给 h3blog 记录；转发真实客户端 IP 供其定位。"""
+    if not ip:
+        return None
+    try:
+        resp = httpx.post(
+            _remote_url("/api/visitor/record"),
+            headers={"X-Forwarded-For": ip},
+            timeout=_REMOTE_TIMEOUT,
+        )
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"访问统计服务暂不可用: {exc}",
+        ) from exc
+    return resp.json().get("visit")
+
+
+def _remote_get(path: str, params: dict[str, object]) -> dict:
+    try:
+        resp = httpx.get(
+            _remote_url(path),
+            params=params,
+            headers={"X-Api-Token": settings.visitor_api_token},
+            timeout=_REMOTE_TIMEOUT,
+        )
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"访问统计服务暂不可用: {exc}",
+        ) from exc
+    return resp.json()
+
+
 def _ensure_table(conn: sqlite3.Connection) -> None:
     conn.execute(SCHEMA)
     conn.commit()
@@ -85,6 +139,8 @@ def _ensure_table(conn: sqlite3.Connection) -> None:
 
 def record_visit(ip: str) -> Optional[dict[str, str]]:
     """记录一次访问，返回该记录（IP 无效时返回 None）。"""
+    if _remote_enabled():
+        return _remote_record(ip)
     if not ip:
         return None
     geo = locate(ip)
@@ -119,6 +175,9 @@ def record_visit(ip: str) -> Optional[dict[str, str]]:
 
 def list_visitors(limit: int = 200) -> list[dict[str, str]]:
     """只返回中国大陆的访问者，按 IP 去重（每个 IP 取最近一次），时间倒序。"""
+    if _remote_enabled():
+        data = _remote_get("/api/visitor/list", {"limit": limit})
+        return data.get("visitors", [])
     conn = get_connection()
     try:
         _ensure_table(conn)
@@ -154,6 +213,8 @@ def list_visitors(limit: int = 200) -> list[dict[str, str]]:
 
 def summary() -> dict:
     """访问量统计：总量、去重 IP、以及中国省份分布。"""
+    if _remote_enabled():
+        return _remote_get("/api/visitor/summary", {})
     conn = get_connection()
     try:
         _ensure_table(conn)
