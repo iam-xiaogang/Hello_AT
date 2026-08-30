@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { ExternalLink, Menu, Search, Settings, Wrench } from "lucide-react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Home, Menu, Wrench } from "lucide-react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { useUiStore } from "../state/ui";
 import { tools } from "../tools/registry";
@@ -21,7 +21,18 @@ export function AppLayout() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-16 shrink-0 items-center justify-between gap-3 bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-400 px-4 text-white shadow-lg shadow-violet-200/50 sm:px-7">
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <Link
+              to="/"
+              className="mr-1 flex shrink-0 items-center gap-2 rounded-xl px-2 py-1 transition hover:bg-white/15"
+              aria-label="回到首页"
+              title="回到首页"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-300 via-orange-400 to-rose-400 text-white shadow-md">
+                <Home size={19} />
+              </span>
+              <span className="hidden text-sm font-semibold drop-shadow-sm md:inline">Toolbox</span>
+            </Link>
             <button className="rounded-lg p-2 text-white/90 hover:bg-white/20 lg:hidden" aria-label="打开菜单" onClick={() => setSidebarOpen(true)}>
               <Menu size={20} />
             </button>
@@ -42,25 +53,6 @@ export function AppLayout() {
                 <Wrench size={17} />
               </span>
             )}
-          </div>
-          <div className="flex items-center gap-1 text-white/90">
-            {/* {tool && (
-              <a
-                className="mr-1 inline-flex items-center gap-1.5 rounded-lg border border-white/40 bg-white/15 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/25"
-                href={tool.meta.externalUrl ?? tool.meta.path}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ExternalLink size={15} />
-                <span className="hidden sm:inline">独立打开</span>
-              </a>
-            )} */}
-            <button className="rounded-lg p-2 hover:bg-white/20" aria-label="搜索（即将推出）">
-              <Search size={19} />
-            </button>
-            <button className="rounded-lg p-2 hover:bg-white/20" aria-label="设置（即将推出）">
-              <Settings size={19} />
-            </button>
           </div>
         </header>
         <main className="flex min-h-0 flex-1 flex-col">

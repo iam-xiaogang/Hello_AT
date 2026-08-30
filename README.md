@@ -88,6 +88,15 @@ docker compose up --build
 
 - JSON 格式化/校验：纯前端。
 - Base64 编码解码：纯前端。
+- 二维码：生成二维码（可调尺寸/颜色/下载 PNG）与从图片识别二维码，纯前端（qrcode + jsQR）。
+- 时间戳：秒/毫秒自动识别、时间戳 ⇄ 日期互转、北京时间/UTC/ISO/相对时间展示，纯前端。
+- 正则测试：实时匹配高亮、分组展示、flags 切换，纯前端。
+- 颜色转换：HEX / RGB / HSL 互转 + 取色器 + 常用色板 + 互补色，纯前端。
+- 文本对比：两段文本逐行/逐字差异高亮（左右对照），纯前端（jsdiff）。
+- 文本处理：大小写/camel/snake/kebab、JSON/URL/HTML 转义编解码、行去重排序、文本统计，纯前端。
+- 图片批量处理：多图批量转格式（JPEG/PNG/WebP）、缩放、圆角、文字水印，Canvas 纯前端处理，可打包 ZIP 下载（jszip）。
+- 文字转语音：浏览器本地语音合成朗读文本（Web Speech API），支持中文等多种语音，纯前端零成本。
+- AI 文本处理：翻译（中英日韩等）、润色、总结要点、纠错，后端代理 DeepSeek 等 OpenAI 兼容接口（密钥在服务端，`TOOLBOX_AI_API_KEY`）。
 - 图片压缩：上传 JPEG、PNG、WebP 到 FastAPI，经 Pillow 压缩并下载，覆盖前后端联调、上传、加载及错误提示流程。
 - 文档转换：PDF → Word（保留排版）、PDF → 文本、Word → 文本，上传至 FastAPI 经 pdf2docx / PyMuPDF / python-docx 转换并下载。
 - 博客：iframe 嵌入 https://iamxiaogang.cn/，展示个人博客文章。

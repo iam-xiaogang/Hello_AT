@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, LazyExoticComponent } from "react";
 import type { LucideIcon } from "lucide-react";
 
 export type ToolKind = "frontend-only" | "needs-backend";
@@ -18,4 +18,7 @@ export interface ToolMeta {
   accent: string;
 }
 
-export interface ToolDefinition { meta: ToolMeta; Component: ComponentType }
+/** 工具组件：路由级懒加载，渲染时由 <Suspense> 包裹。 */
+export type ToolComponent = ComponentType | LazyExoticComponent<ComponentType>;
+
+export interface ToolDefinition { meta: ToolMeta; Component: ToolComponent }

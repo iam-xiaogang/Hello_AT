@@ -1,0 +1,1 @@
+class e extends Error{constructor(a,t){super(a),this.status=t}}async function o(r,a={}){let t;try{t=await fetch(`/api${r}`,a)}catch{throw new e("网络连接失败，请确认后端服务正在运行。")}if(!t.ok){let s="请求失败，请稍后重试。";try{s=(await t.json()).detail??s}catch{}throw new e(s,t.status)}return t}export{e as A,o as a};

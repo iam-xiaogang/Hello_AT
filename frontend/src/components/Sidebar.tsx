@@ -63,9 +63,9 @@ export function Sidebar() {
   return (
     <>
       <aside
-        className={`hidden shrink-0 border-r border-white/70 bg-gradient-to-b from-violet-100/90 via-white/85 to-sky-50/90 backdrop-blur transition-[width] duration-200 lg:block ${sidebarCollapsed ? "w-16" : "w-64"}`}
+        className={`hidden shrink-0 flex-col border-r border-white/70 bg-gradient-to-b from-violet-100/90 via-white/85 to-sky-50/90 backdrop-blur transition-[width] duration-200 lg:sticky lg:top-0 lg:flex lg:h-screen ${sidebarCollapsed ? "w-16" : "w-64"}`}
       >
-        <div className={`flex h-16 items-center border-b border-white/70 ${sidebarCollapsed ? "justify-center" : "justify-end pr-2"}`}>
+        <div className={`flex h-16 shrink-0 items-center border-b border-white/70 ${sidebarCollapsed ? "justify-center" : "justify-end pr-2"}`}>
           <button
             className="rounded-lg p-2 text-slate-400 transition hover:bg-white/90 hover:text-violet-500"
             onClick={toggleSidebarCollapsed}
@@ -75,7 +75,9 @@ export function Sidebar() {
             {sidebarCollapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
           </button>
         </div>
-        <NavList collapsed={sidebarCollapsed} onNavigate={() => {}} />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <NavList collapsed={sidebarCollapsed} onNavigate={() => {}} />
+        </div>
       </aside>
       <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? "" : "pointer-events-none"}`}>
         <div
@@ -83,14 +85,16 @@ export function Sidebar() {
           onClick={() => setSidebarOpen(false)}
         />
         <aside
-          className={`absolute inset-y-0 left-0 w-72 bg-gradient-to-b from-violet-50 via-white to-sky-50 shadow-2xl shadow-violet-200/40 backdrop-blur transition-transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`absolute inset-y-0 left-0 flex w-72 flex-col bg-gradient-to-b from-violet-50 via-white to-sky-50 shadow-2xl shadow-violet-200/40 backdrop-blur transition-transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
-          <div className="flex h-16 items-center justify-end border-b border-slate-100 px-4">
+          <div className="flex h-16 shrink-0 items-center justify-end border-b border-slate-100 px-4">
             <button className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" onClick={() => setSidebarOpen(false)} aria-label="关闭菜单">
               <X size={20} />
             </button>
           </div>
-          <NavList collapsed={false} onNavigate={() => setSidebarOpen(false)} />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <NavList collapsed={false} onNavigate={() => setSidebarOpen(false)} />
+          </div>
         </aside>
       </div>
     </>
