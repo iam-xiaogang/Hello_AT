@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # AI 文本处理（翻译/润色/总结/纠错）：OpenAI 兼容的 Chat Completions 接口
     ai_api_base: str = "https://api.deepseek.com/v1"
-    ai_api_key: str = ""
+    ai_api_key: str = "sk-3d4d52d3eda0499bb9b4f95fd46c4f81"
     ai_model: str = "deepseek-chat"
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="TOOLBOX_")
