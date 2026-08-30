@@ -91,4 +91,4 @@ docker compose up --build
 - 图片压缩：上传 JPEG、PNG、WebP 到 FastAPI，经 Pillow 压缩并下载，覆盖前后端联调、上传、加载及错误提示流程。
 - 文档转换：PDF → Word（保留排版）、PDF → 文本、Word → 文本，上传至 FastAPI 经 pdf2docx / PyMuPDF / python-docx 转换并下载。
 - 博客：iframe 嵌入 https://iamxiaogang.cn/，展示个人博客文章。
-- 访问者统计：前端埋点记录每次页面加载的访问者，后端用离线 ip2region 数据库把 IP 定位到中国省份（`backend/app/tools/visitor_tracker/data/ip2region_v4.xdb`），SQLite 持久化（`backend/data/toolbox.db`，自动创建、已 gitignore），只展示中国大陆访问者并按 IP 去重；省份分布以中国地图展示（ECharts，地图 GeoJSON 在 `frontend/public/maps/china.json`），有访问记录的省份上色、无记录为白色。
+- 访问者统计：前端埋点记录每次页面加载的访问者，后端用离线 ip2region 数据库把 IP 定位到中国省份（`backend/app/tools/visitor_tracker/data/ip2region_v4.xdb`），SQLite 持久化（`backend/data/toolbox.db`，自动创建、已 gitignore），只展示中国大陆访问者并按 IP 去重；数据分库存储、展示时合并：工具箱访问记本地 SQLite，博客（h3blog）访问通过 `TOOLBOX_VISITOR_API_BASE` 配置的 `/api/visitor/*` 接口读取博客库，页面显示两库总和；省份分布以中国地图展示（ECharts，地图 GeoJSON 在 `frontend/public/maps/china.json`），有访问记录的省份上色、无记录为白色。
