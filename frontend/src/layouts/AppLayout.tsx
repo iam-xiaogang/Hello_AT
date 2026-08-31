@@ -7,6 +7,7 @@ import { useUiStore } from "../state/ui";
 import { useToolPrefs } from "../state/toolPrefs";
 import { tools } from "../tools/registry";
 import { useSeo } from "../utils/seo";
+import { quotes } from "../data/quotes";
 
 export function AppLayout() {
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
@@ -16,6 +17,20 @@ export function AppLayout() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const tool = tools.find((t) => t.meta.path === location.pathname);
   const Icon = tool?.meta.icon;
+
+  // 顶部名言轮播：每 10 秒切换一条，先淡出再换内容淡入
+  const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * quotes.length));
+  const [quoteVisible, setQuoteVisible] = useState(true);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setQuoteVisible(false);
+      setTimeout(() => {
+        setQuoteIndex((i) => (i + 1) % quotes.length);
+        setQuoteVisible(true);
+      }, 400);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   // 动态 SEO：每个工具页独立的 title / description / OG / JSON-LD
   const seoTitle = tool
@@ -95,6 +110,15 @@ export function AppLayout() {
                 <Wrench size={17} />
               </span>
             )}
+          </div>
+          {/* 名言轮播：中等屏幕以上显示 */}
+          <div className="hidden min-w-0 flex-1 items-center justify-center px-4 md:flex">
+            <p
+              className={`max-w-full truncate text-sm italic text-white/90 transition-opacity duration-500 ${quoteVisible ? "opacity-100" : "opacity-0"}`}
+              title={`${quotes[quoteIndex].text} —— ${quotes[quoteIndex].author}`}
+            >
+              "{quotes[quoteIndex].text}" <span className="text-white/70">—— {quotes[quoteIndex].author}</span>
+            </p>
           </div>
           <div className="flex items-center gap-1 text-white/90">
             <button

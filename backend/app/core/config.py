@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     # AI 接口限流：每 IP 每小时最多请求次数
     ai_rate_limit: int = 30
 
+    # 博客后台管理令牌：配置后写操作（新建/编辑/删除文章）需携带 X-Blog-Token
+    blog_admin_token: str = "iamxiaogang"
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="TOOLBOX_")
 
 
