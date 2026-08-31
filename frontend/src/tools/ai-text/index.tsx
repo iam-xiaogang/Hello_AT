@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CheckCircle2, Copy, Languages, Loader2, PenLine, Sparkles, SpellCheck2, ListOrdered } from "lucide-react";
 import { apiFetch } from "../../api/client";
+import { getParam } from "../../utils/params";
 
 type Action = "translate" | "polish" | "summarize" | "proofread";
 
@@ -29,7 +30,7 @@ async function copy(text: string): Promise<boolean> {
 }
 
 export default function AiText() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(getParam("text"));
   const [result, setResult] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

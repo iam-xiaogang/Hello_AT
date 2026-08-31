@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Copy } from "lucide-react";
+import { getParam } from "../../utils/params";
 
 interface RGB { r: number; g: number; b: number }
 interface HSL { h: number; s: number; l: number }
@@ -121,10 +122,13 @@ function Field({ label, value, onChange, placeholder, mono }: { label: string; v
 }
 
 export default function ColorTools() {
-  const [hex, setHex] = useState("#6366f1");
-  const [rgb, setRgb] = useState("rgb(99, 102, 241)");
-  const [hsl, setHsl] = useState("hsl(239, 84%, 67%)");
-  const [picker, setPicker] = useState("#6366f1");
+  const initialHex = getParam("hex") || "#6366f1";
+  const initial = parseHex(initialHex) ?? { r: 99, g: 102, b: 241 };
+  const [hex, setHex] = useState(initialHex);
+  const [rgb, setRgb] = useState(`rgb(${initial.r}, ${initial.g}, ${initial.b})`);
+  const h = rgbToHsl(initial);
+  const [hsl, setHsl] = useState(`hsl(${h.h}, ${h.s}%, ${h.l}%)`);
+  const [picker, setPicker] = useState(initialHex);
   const [error, setError] = useState("");
 
   const current: RGB | null = useMemo(() => parseHex(hex), [hex]);

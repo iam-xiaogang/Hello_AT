@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Loader2, Pause, Play, Square, Volume2 } from "lucide-react";
+import { getParam } from "../../utils/params";
 
 type Status = "idle" | "speaking" | "paused";
 
 const RATE_PRESETS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
 export default function Tts() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(getParam("text"));
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [voiceURI, setVoiceURI] = useState("");
   const [rate, setRate] = useState(1);

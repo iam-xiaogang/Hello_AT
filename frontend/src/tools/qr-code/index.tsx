@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Download, ScanLine, Wand2 } from "lucide-react";
 import QRCode from "qrcode";
 import jsQR from "jsqr";
+import { useToast } from "../../components/Toast";
+import { getParam } from "../../utils/params";
 
 type Tab = "generate" | "scan";
 
@@ -15,8 +17,9 @@ async function clipboard(text: string): Promise<boolean> {
 }
 
 export default function QrCodeTool() {
+  const { toast } = useToast();
   const [tab, setTab] = useState<Tab>("generate");
-  const [text, setText] = useState("");
+  const [text, setText] = useState(getParam("text"));
   const [size, setSize] = useState(280);
   const [dark, setDark] = useState("#000000");
   const [light, setLight] = useState("#ffffff");
@@ -81,6 +84,17 @@ export default function QrCodeTool() {
     };
     img.src = objectUrl;
   };
+
+  // 识别页支持直接粘贴截图
+  useEffect(() => {
+    if (tab !== "scan") return;
+    const onPaste = (e: ClipboardEvent) => {
+      const file = e.clipboardData?.files?.[0];
+      if (file && file.type.startsWith("image/")) scanFile(file);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [tab]);
 
   return (
     <section className="flex flex-1 flex-col gap-4 p-5 sm:p-8">
@@ -153,7 +167,7 @@ export default function QrCodeTool() {
                 </a>
                 <button
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
-                  onClick={async () => { if (await clipboard(text)) alert("内容已复制。"); }}
+                  onClick={async () => { if (await clipboard(text)) toast("内容已复制。"); }}
                 >
                   复制内容
                 </button>
@@ -162,7 +176,15 @@ export default function QrCodeTool() {
           )}
         </div>
       ) : (
-        <div className="panel flex flex-col gap-4 p-5">
+        <div
+          className="panel flex flex-col gap-4 p-5"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files?.[0];
+            if (file && file.type.startsWith("image/")) scanFile(file);
+          }}
+        >
           <div>
             <label className="label" htmlFor="qr-file">选择包含二维码的图片</label>
             <input
@@ -185,14 +207,14 @@ export default function QrCodeTool() {
               <p className="break-all font-mono text-sm text-slate-800">{scanResult}</p>
               <button
                 className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-                onClick={async () => { if (await clipboard(scanResult)) alert("结果已复制。"); }}
+                onClick={async () => { if (await clipboard(scanResult)) toast("结果已复制。"); }}
               >
                 复制结果
               </button>
             </div>
           )}
           {!scanResult && !scanError && (
-            <p className="text-sm text-slate-400">支持 PNG / JPG / WebP 等格式的二维码截图。</p>
+            <p className="text-sm text-slate-400">支持 PNG / JPG / WebP 等格式；也可以直接拖图片到此处，或 Ctrl+V 粘贴截图。</p>
           )}
         </div>
       )}

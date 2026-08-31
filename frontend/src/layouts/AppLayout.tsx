@@ -1,19 +1,51 @@
-import { useEffect } from "react";
-import { Home, Menu, Wrench } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Home, Menu, Moon, Search, Sun, Wrench } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
+import { CommandPalette } from "../components/CommandPalette";
 import { useUiStore } from "../state/ui";
+import { useToolPrefs } from "../state/toolPrefs";
 import { tools } from "../tools/registry";
 
 export function AppLayout() {
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
+  const theme = useUiStore((s) => s.theme);
+  const toggleTheme = useUiStore((s) => s.toggleTheme);
   const location = useLocation();
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const tool = tools.find((t) => t.meta.path === location.pathname);
   const Icon = tool?.meta.icon;
+
+  // 深色模式：切换 <html class="dark">
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   // 访问埋点：每次页面加载记录一次访问者（IP/时间/省份），失败静默忽略。
   useEffect(() => {
     fetch("/api/tools/visitor-tracker/record", { method: "POST", keepalive: true }).catch(() => {});
+  }, []);
+
+  // 记录最近使用的工具
+  const pathname = location.pathname;
+  useEffect(() => {
+    const current = tools.find((t) => t.meta.path === pathname);
+    useToolPrefs.getState().recordVisit(current?.meta.id ?? "");
+  }, [pathname]);
+
+  // Ctrl/Cmd+K 或 "/" 打开命令面板
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((open) => !open);
+      } else if (e.key === "/" && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   return (
@@ -54,11 +86,30 @@ export function AppLayout() {
               </span>
             )}
           </div>
+          <div className="flex items-center gap-1 text-white/90">
+            <button
+              className="rounded-lg p-2 transition hover:bg-white/20"
+              aria-label="搜索工具（Ctrl+K）"
+              title="搜索工具（Ctrl+K）"
+              onClick={() => setPaletteOpen(true)}
+            >
+              <Search size={19} />
+            </button>
+            <button
+              className="rounded-lg p-2 transition hover:bg-white/20"
+              aria-label={theme === "dark" ? "切换浅色模式" : "切换深色模式"}
+              title={theme === "dark" ? "切换浅色模式" : "切换深色模式"}
+              onClick={toggleTheme}
+            >
+              {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
+            </button>
+          </div>
         </header>
         <main className="flex min-h-0 flex-1 flex-col">
           <Outlet />
         </main>
       </div>
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
   );
 }

@@ -1,1 +1,0 @@
-import{j as e,b as l}from"./index-Bi81yLS3.js";function s(){return e.jsx("section",{className:"relative flex min-h-0 flex-1 flex-col",children:e.jsx("div",{className:"panel flex min-h-0 flex-1 overflow-hidden bg-white",children:e.jsx("iframe",{title:"我的博客",src:l.externalUrl,className:"h-full w-full border-0"})})})}export{s as default};

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Download, FileArchive, Images, Loader2, Upload } from "lucide-react";
 import JSZip from "jszip";
 
@@ -132,7 +132,27 @@ export default function ImageProcessor() {
   const [results, setResults] = useState<ProcessedImage[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const pickFiles = (list: File[] | FileList | null) => {
+    const imgs = Array.from(list ?? []).filter((f) => f.type.startsWith("image/"));
+    if (imgs.length > 0) {
+      setFiles(imgs);
+      setResults([]);
+      setError("");
+    }
+  };
+
+  // 支持 Ctrl+V 粘贴图片
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const f = e.clipboardData?.files?.[0];
+      if (f && f.type.startsWith("image/")) pickFiles([f]);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
 
   const patch = (p: Partial<Options>) => setOpts((o) => ({ ...o, ...p }));
 
@@ -167,7 +187,16 @@ export default function ImageProcessor() {
 
   return (
     <section className="flex flex-1 flex-col gap-4 p-5 sm:p-8">
-      <div className="panel flex flex-col gap-4 p-5">
+      <div
+        className={`panel flex flex-col gap-4 p-5 transition ${dragging ? "border-2 border-dashed border-sky-400" : ""}`}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          pickFiles(e.dataTransfer.files);
+        }}
+      >
         <div>
           <label className="label" htmlFor="img-multi">选择图片（可多选）</label>
           <input
@@ -178,16 +207,15 @@ export default function ImageProcessor() {
             accept="image/*"
             multiple
             onChange={(e) => {
-              const list = Array.from(e.target.files ?? []);
-              setFiles(list);
-              setResults([]);
-              setError("");
+              pickFiles(e.target.files);
             }}
           />
-          {files.length > 0 && (
+          {files.length > 0 ? (
             <p className="mt-2 text-sm text-slate-500">
               已选择 {files.length} 张：{files.slice(0, 5).map((f) => f.name).join("、")}{files.length > 5 ? " …" : ""}
             </p>
+          ) : (
+            <p className="mt-2 text-sm text-slate-500">也可以直接拖多张图片到此处，或 Ctrl+V 粘贴。</p>
           )}
         </div>
 

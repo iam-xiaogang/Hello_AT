@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { diffChars, diffLines } from "diff";
+import { getParam } from "../../utils/params";
 
 interface Cell {
   text: string;
@@ -107,8 +108,8 @@ function CellContent({ cell, pairText, side }: { cell: Cell; pairText?: string; 
 }
 
 export default function TextDiff() {
-  const [oldText, setOldText] = useState("");
-  const [newText, setNewText] = useState("");
+  const [oldText, setOldText] = useState(getParam("old"));
+  const [newText, setNewText] = useState(getParam("new"));
 
   const rows = useMemo(() => buildRows(oldText, newText), [oldText, newText]);
   const stats = useMemo(() => {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Clock, Copy, RefreshCw } from "lucide-react";
+import { getParam } from "../../utils/params";
 
 async function copy(text: string): Promise<boolean> {
   try {
@@ -64,7 +65,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 }
 
 export default function TimestampTool() {
-  const [tsInput, setTsInput] = useState("");
+  const [tsInput, setTsInput] = useState(getParam("ts"));
   const [now, setNow] = useState<Date>(new Date());
   const [datetime, setDatetime] = useState("");
 

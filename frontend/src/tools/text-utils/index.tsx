@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Copy, Eraser } from "lucide-react";
+import { getParam } from "../../utils/params";
 
 async function copy(text: string): Promise<boolean> {
   try {
@@ -42,7 +43,7 @@ const TRANSFORMS: Record<string, (s: string) => string> = {
 };
 
 export default function TextUtils() {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(getParam("text"));
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);

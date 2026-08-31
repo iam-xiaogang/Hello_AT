@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Download, Upload } from "lucide-react";
 import { ApiError, apiFetch } from "../../api/client";
 
@@ -11,12 +11,33 @@ function getDownloadName(disposition: string): string {
   return /filename="?([^";]+)"?/i.exec(disposition)?.[1] ?? "compressed-image";
 }
 
+const ACCEPT = "image/jpeg,image/png,image/webp";
+
 export default function ImageCompressor() {
   const [file, setFile] = useState<File | null>(null);
   const [quality, setQuality] = useState(80);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [download, setDownload] = useState<{ url: string; name: string } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const pickFile = (f: File | null | undefined) => {
+    if (f && ACCEPT.split(",").some((t) => f.type === t)) {
+      setFile(f);
+      setDownload(null);
+    }
+  };
+
+  // 支持 Ctrl+V 粘贴图片
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const f = e.clipboardData?.files?.[0];
+      if (f && f.type.startsWith("image/")) pickFile(f);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
 
   const submit = async () => {
     if (!file) {
@@ -45,17 +66,29 @@ export default function ImageCompressor() {
   return (
     <section className="flex flex-1 flex-col gap-4 p-5 sm:p-8">
       <p className="text-sm text-slate-500">支持 JPEG、PNG、WebP，单个文件最大 12 MB。</p>
-      <div className="panel flex flex-col gap-4 p-5">
+      <div
+        className={`panel flex flex-col gap-4 p-5 transition ${dragging ? "border-2 border-dashed border-indigo-400" : ""}`}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          pickFile(e.dataTransfer.files?.[0]);
+        }}
+      >
         <div>
           <label className="label" htmlFor="image-file">选择图片</label>
           <input
             id="image-file"
+            ref={inputRef}
             className="field"
             type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={(e) => { setFile(e.target.files?.[0] ?? null); setDownload(null); }}
+            accept={ACCEPT}
+            onChange={(e) => { pickFile(e.target.files?.[0]); }}
           />
-          <p className="mt-2 text-sm text-slate-500">{file ? `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB` : "尚未选择文件"}</p>
+          <p className="mt-2 text-sm text-slate-500">
+            {file ? `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB` : "尚未选择文件（也可以拖图片到此处或 Ctrl+V 粘贴）"}
+          </p>
         </div>
         <div>
           <label className="label" htmlFor="quality">压缩质量：{quality}</label>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Copy, SearchCheck } from "lucide-react";
+import { getParam } from "../../utils/params";
 
 interface MatchInfo {
   index: number;
@@ -26,8 +27,8 @@ const FLAGS = [
 ] as const;
 
 export default function RegexTester() {
-  const [pattern, setPattern] = useState("");
-  const [text, setText] = useState("");
+  const [pattern, setPattern] = useState(getParam("pattern"));
+  const [text, setText] = useState(getParam("text"));
   const [flags, setFlags] = useState("gi");
 
   const { error, matches, segments } = useMemo(() => {
