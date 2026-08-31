@@ -63,6 +63,15 @@ npm run dev
 | `TOOLBOX_AI_API_TOKEN` | 空 | 可选：配置后 AI 接口需携带 `X-Api-Token`（前端配 `VITE_AI_API_TOKEN` 自动带上） |
 | `TOOLBOX_AI_RATE_LIMIT` | `30` | AI 接口每 IP 每小时请求上限 |
 
+### SEO
+
+- 每个工具页动态设置 `title` / `description` / OG 标签 / JSON-LD 结构化数据（`frontend/src/utils/seo.ts`），站点域名可用 `VITE_SITE_BASE` 覆盖。
+- `npm run build` 时自动扫描工具注册表生成 `public/sitemap.xml`（18 个 URL），`public/robots.txt` 指向它；部署域名用 `SITE_DOMAIN` 环境变量覆盖。
+- 提交收录：
+  - 百度：百度搜索资源平台验证站点后，`BAIDU_TOKEN=xxx BAIDU_SITE=www.xiaogangai.site node frontend/scripts/push-baidu.mjs` 主动推送；也可在站长平台提交 sitemap。
+  - Google：Search Console 提交 `https://www.xiaogangai.site/sitemap.xml`。
+- SPA 深度预渲染（每个工具页生成静态 HTML）需要 SSR 化改造，属于后续可选优化。
+
 ### 构建后本地预览
 
 ```bash

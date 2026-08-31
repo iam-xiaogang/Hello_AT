@@ -6,6 +6,7 @@ import { CommandPalette } from "../components/CommandPalette";
 import { useUiStore } from "../state/ui";
 import { useToolPrefs } from "../state/toolPrefs";
 import { tools } from "../tools/registry";
+import { useSeo } from "../utils/seo";
 
 export function AppLayout() {
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
@@ -15,6 +16,15 @@ export function AppLayout() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const tool = tools.find((t) => t.meta.path === location.pathname);
   const Icon = tool?.meta.icon;
+
+  // 动态 SEO：每个工具页独立的 title / description / OG / JSON-LD
+  const seoTitle = tool
+    ? `${tool.meta.name} - 在线工具 | Toolbox`
+    : "在线工具箱 | Toolbox - 免费实用的在线小工具";
+  const seoDescription = tool
+    ? `${tool.meta.description} 免费在线使用，无需下载安装。`
+    : "Toolbox 是一个免费在线工具箱，提供 JSON 格式化、图片压缩、文档转换、二维码、正则测试、AI 文本处理等 20+ 实用工具，全部在浏览器中运行。";
+  useSeo(seoTitle, seoDescription, location.pathname);
 
   // 深色模式：切换 <html class="dark">
   useEffect(() => {
