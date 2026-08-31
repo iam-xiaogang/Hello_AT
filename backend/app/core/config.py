@@ -12,10 +12,18 @@ class Settings(BaseSettings):
     visitor_api_base: str = "https://iamxiaogang.cn"
     visitor_api_token: str = "iamxiaogang"
 
+    # 访问埋点限流：每 IP 每分钟最多记录次数（防刷库）
+    visitor_record_rate_limit: int = 5
+
     # AI 文本处理（翻译/润色/总结/纠错）：OpenAI 兼容的 Chat Completions 接口
     ai_api_base: str = "https://api.deepseek.com/v1"
-    ai_api_key: str = "sk-3d4d52d3eda0499bb9b4f95fd46c4f81"
+    # ⚠️ 密钥请通过环境变量 / .env 的 TOOLBOX_AI_API_KEY 提供，不要写死在代码里
+    ai_api_key: str = ""
     ai_model: str = "deepseek-chat"
+    # 可选：额外访问令牌（配置后需携带 X-Api-Token 请求头，防止他人消耗你的 AI 额度）
+    ai_api_token: str = ""
+    # AI 接口限流：每 IP 每小时最多请求次数
+    ai_rate_limit: int = 30
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="TOOLBOX_")
 

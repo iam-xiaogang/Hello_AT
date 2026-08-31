@@ -1,8 +1,9 @@
 import { Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "./layouts/AppLayout";
 import Welcome from "./pages/Welcome";
 import { tools } from "./tools/registry";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 /** 懒加载工具组件时的加载占位 */
 function ToolFallback() {
@@ -17,6 +18,7 @@ function ToolFallback() {
 }
 
 export default function App() {
+  const location = useLocation();
   return (
     <Routes>
       <Route element={<AppLayout />}>
@@ -26,9 +28,11 @@ export default function App() {
             key={meta.id}
             path={meta.path}
             element={
-              <Suspense fallback={<ToolFallback />}>
-                <Component />
-              </Suspense>
+              <ErrorBoundary key={location.pathname}>
+                <Suspense fallback={<ToolFallback />}>
+                  <Component />
+                </Suspense>
+              </ErrorBoundary>
             }
           />
         ))}

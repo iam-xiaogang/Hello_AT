@@ -1,0 +1,28 @@
+# Toolbox (Hello_AT) FastAPI 后端 systemd 服务
+#
+# 安装：
+#   sudo cp deploy/systemd/toolbox-backend.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now toolbox-backend
+#
+# 按你的实际路径修改下面的 WorkingDirectory / ExecStart / User。
+
+[Unit]
+Description=Toolbox (Hello_AT) FastAPI backend
+After=network.target
+
+[Service]
+Type=simple
+# 换成服务器上项目实际路径与用户（不要用 root）
+WorkingDirectory=/home/www/Hello_AT/backend
+User=www-data
+EnvironmentFile=/home/www/Hello_AT/backend/.env
+ExecStart=/home/www/Hello_AT/backend/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+# 日志走 journald：journalctl -u toolbox-backend -f
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

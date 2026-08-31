@@ -50,6 +50,19 @@ npm run dev
 
 打开 `http://localhost:5173`。Vite 会把 `/api` 请求代理到 `http://localhost:8000`；后端也已允许该来源的 CORS 请求。
 
+### 环境变量（backend/.env，均已 gitignore）
+
+| 变量 | 默认值 | 说明 |
+|---|---|---|
+| `TOOLBOX_VISITOR_API_BASE` | `https://iamxiaogang.cn` | 博客访问统计接口地址；留空则只用本地记录 |
+| `TOOLBOX_VISITOR_API_TOKEN` | `iamxiaogang` | 读取博客库时的令牌（与博客侧 `VISITOR_API_TOKEN` 一致） |
+| `TOOLBOX_VISITOR_RECORD_RATE_LIMIT` | `5` | 访问埋点每 IP 每分钟记录上限（防刷库） |
+| `TOOLBOX_AI_API_KEY` | 空 | DeepSeek 等 API 密钥，**只放 .env，勿写死在代码** |
+| `TOOLBOX_AI_API_BASE` | `https://api.deepseek.com/v1` | AI 接口地址（OpenAI 兼容） |
+| `TOOLBOX_AI_MODEL` | `deepseek-chat` | AI 模型名 |
+| `TOOLBOX_AI_API_TOKEN` | 空 | 可选：配置后 AI 接口需携带 `X-Api-Token`（前端配 `VITE_AI_API_TOKEN` 自动带上） |
+| `TOOLBOX_AI_RATE_LIMIT` | `30` | AI 接口每 IP 每小时请求上限 |
+
 ### 构建后本地预览
 
 ```bash

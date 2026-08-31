@@ -43,9 +43,13 @@ export default function AiText() {
     setBusy(true);
     setError("");
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      // 可选：构建时配置 VITE_AI_API_TOKEN 后自动携带访问令牌
+      const token = import.meta.env.VITE_AI_API_TOKEN as string | undefined;
+      if (token) headers["X-Api-Token"] = token;
       const res = await apiFetch("/tools/ai-text/process", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ action, text, target }),
       });
       const data = (await res.json()) as { result: string };

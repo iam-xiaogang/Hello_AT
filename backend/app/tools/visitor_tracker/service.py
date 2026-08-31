@@ -15,12 +15,13 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 
 import httpx
-from fastapi import HTTPException, Request, status
+from fastapi import HTTPException, status
 
 import ip2region.util as ip2r_util
 from ip2region.searcher import new_with_buffer
 
 from app.core.config import settings
+from app.core.ip import extract_client_ip
 from app.db import get_connection
 
 XDB_PATH = Path(__file__).resolve().parent / "data" / "ip2region_v4.xdb"
@@ -72,18 +73,6 @@ def locate(ip: str) -> dict[str, str]:
         "isp": "" if isp == "0" else isp,
         "country_code": code,
     }
-
-
-def extract_client_ip(request: Request) -> str:
-    """取真实客户端 IP：优先 X-Forwarded-For（Nginx 反代场景），否则直连地址。"""
-    forwarded = request.headers.get("x-forwarded-for", "")
-    if forwarded:
-        first = forwarded.split(",")[0].strip()
-        if first and first.lower() != "unknown":
-            return first
-    if request.client is not None:
-        return request.client.host
-    return ""
 
 
 # ---------------------------------------------------------------------------
