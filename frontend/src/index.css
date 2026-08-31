@@ -67,4 +67,17 @@
   .blog-markdown th { @apply bg-slate-50 font-medium dark:bg-slate-800; }
   .blog-markdown hr { @apply my-6 border-slate-200 dark:border-slate-700; }
   .blog-markdown img { @apply my-4 max-w-full rounded-xl; }
+  /* 顶部激励语：向左无缝滚动 */
+  .marquee { @apply overflow-hidden whitespace-nowrap; }
+  .marquee-track {
+    @apply inline-flex min-w-max;
+    animation: marquee-scroll linear infinite;
+    will-change: transform;
+  }
+  .marquee-item { @apply whitespace-nowrap pr-12; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
 }

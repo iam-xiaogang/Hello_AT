@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile, status
+from fastapi.responses import FileResponse
 
 from app.core.config import settings
 
@@ -46,6 +47,22 @@ async def categories() -> dict:
 async def create_article(request: Request, data: ArticleCreate) -> dict:
     _check_admin(request)
     return service.create_article(data)
+
+
+@router.post("/images")
+async def upload_image(request: Request, file: UploadFile = File(...)) -> dict:
+    """上传博客图片（需 X-Blog-Token），返回可直接写入 Markdown 的 URL。"""
+    _check_admin(request)
+    return await service.save_image(file)
+
+
+@router.get("/images/{filename}")
+async def get_image(filename: str) -> FileResponse:
+    found = service.image_file(filename)
+    if not found:
+        raise HTTPException(status_code=404, detail="图片不存在。")
+    path, media_type = found
+    return FileResponse(path, media_type=media_type)
 
 
 @router.put("/articles/{article_id}")

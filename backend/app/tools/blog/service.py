@@ -1,9 +1,15 @@
 """博客文章 CRUD：SQLite 持久化（复用 app.db 连接接缝）。"""
 
+import re
 import sqlite3
+import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
+from fastapi import HTTPException, UploadFile, status
+
+from app.core.config import settings
 from app.db import get_connection
 
 SCHEMA = """
@@ -17,6 +23,57 @@ CREATE TABLE IF NOT EXISTS blog_articles (
     updated_at TEXT NOT NULL
 );
 """
+
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
+_IMAGE_NAME_RE = re.compile(r"^[0-9a-f]{32}\.(jpg|jpeg|png|webp|gif)$")
+_IMAGE_MEDIA = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif"}
+
+
+def _image_dir() -> Path:
+    """博客图片保存目录（默认 backend/data/blog-images，已 gitignore）。"""
+    default = Path(__file__).resolve().parent.parent.parent / "data" / "blog-images"
+    directory = Path(settings.blog_image_dir) if settings.blog_image_dir else default
+    directory.mkdir(parents=True, exist_ok=True)
+    return directory
+
+
+async def save_image(file: UploadFile) -> dict:
+    """保存上传的图片，返回可通过 /api/tools/blog/images/<name> 访问的 URL。"""
+    ext = ALLOWED_IMAGE_TYPES.get(file.content_type or "")
+    if not ext:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="仅支持 JPEG、PNG、WebP、GIF 图片。",
+        )
+    raw = await file.read(settings.blog_image_max_bytes + 1)
+    if not raw:
+        raise HTTPException(status_code=400, detail="图片内容为空。")
+    if len(raw) > settings.blog_image_max_bytes:
+        limit_mb = settings.blog_image_max_bytes // (1024 * 1024)
+        raise HTTPException(status_code=413, detail=f"图片不能超过 {limit_mb} MB。")
+
+    filename = uuid.uuid4().hex + ext
+    (_image_dir() / filename).write_bytes(raw)
+    return {
+        "ok": True,
+        "name": filename,
+        "url": f"/api/tools/blog/images/{filename}",
+    }
+
+
+def image_file(filename: str) -> Optional[tuple[Path, str]]:
+    """按文件名返回 (路径, media_type)；非法文件名/不存在返回 None。"""
+    if not _IMAGE_NAME_RE.match(filename):
+        return None
+    path = _image_dir() / filename
+    if not path.exists():
+        return None
+    return path, _IMAGE_MEDIA[filename.rsplit(".", 1)[-1]]
 
 
 def _now() -> str:

@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # 博客后台管理令牌：配置后写操作（新建/编辑/删除文章）需携带 X-Blog-Token
     blog_admin_token: str = "iamxiaogang"
 
+    # 博客图片上传：保存目录（默认 backend/data/blog-images，已 gitignore）与大小上限
+    blog_image_dir: str = ""
+    blog_image_max_bytes: int = 5 * 1024 * 1024
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="TOOLBOX_")
 
 

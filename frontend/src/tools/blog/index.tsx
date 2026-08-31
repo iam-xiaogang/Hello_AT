@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, BookOpen, KeyRound, Pencil, Plus, Save, Settings2, Trash2, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, BookOpen, ImagePlus, KeyRound, Loader2, Pencil, Plus, Save, Settings2, Trash2, X } from "lucide-react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { apiFetch } from "../../api/client";
@@ -337,6 +337,51 @@ function EditorForm({ editing, token, onSaved, onCancel }: {
   const [summary, setSummary] = useState(editing?.summary ?? "");
   const [content, setContent] = useState(editing?.content ?? "");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /** 在正文光标处插入 Markdown，并保持焦点 */
+  const insertAtCursor = (md: string) => {
+    const el = contentRef.current;
+    if (!el) {
+      setContent((c) => c + "\n" + md);
+      return;
+    }
+    const start = el.selectionStart ?? content.length;
+    const end = el.selectionEnd ?? content.length;
+    const next = content.slice(0, start) + md + content.slice(end);
+    setContent(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + md.length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
+
+  const uploadAndInsert = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast("仅支持图片文件。", "error");
+      return;
+    }
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await apiFetch("/tools/blog/images", {
+        method: "POST",
+        headers: { "X-Blog-Token": token },
+        body: form,
+      });
+      const data = (await res.json()) as { url: string };
+      insertAtCursor(`\n![图片](${data.url})\n`);
+      toast("图片已上传并插入。");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "上传失败。", "error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const save = async () => {
     if (!title.trim()) {
@@ -388,14 +433,43 @@ function EditorForm({ editing, token, onSaved, onCancel }: {
         <textarea id="blog-summary" className="field min-h-16" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="列表页展示的一句话摘要" />
       </div>
       <div>
-        <label className="label" htmlFor="blog-content">正文（Markdown）</label>
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <label className="label mb-0" htmlFor="blog-content">正文（Markdown）</label>
+          <button
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs text-slate-600 transition hover:border-violet-300 hover:text-violet-600 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
+            {uploading ? "上传中…" : "上传图片"}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) uploadAndInsert(f);
+              e.target.value = "";
+            }}
+          />
+        </div>
         <textarea
           id="blog-content"
+          ref={contentRef}
           className="field min-h-64 font-mono text-[13px]"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={"# 标题\n\n支持 **加粗**、`代码`、列表、引用、表格等 Markdown 语法"}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            const f = e.dataTransfer.files?.[0];
+            if (f) uploadAndInsert(f);
+          }}
         />
+        <p className="mt-1 text-xs text-slate-400">支持点"上传图片"或直接拖拽图片到正文，自动上传并插入 Markdown 图片链接。</p>
       </div>
       <div className="flex gap-3">
         <button className="btn" onClick={save} disabled={saving}>

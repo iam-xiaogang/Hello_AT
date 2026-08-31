@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Home, Menu, Moon, Search, Sun, Wrench } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
@@ -18,19 +18,32 @@ export function AppLayout() {
   const tool = tools.find((t) => t.meta.path === location.pathname);
   const Icon = tool?.meta.icon;
 
-  // 顶部名言轮播：每 10 秒切换一条，先淡出再换内容淡入
+  // 顶部激励语轮播：每 10 秒换一条；文字放不下时向左滚动，放得下则静止显示
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * quotes.length));
-  const [quoteVisible, setQuoteVisible] = useState(true);
   useEffect(() => {
-    const timer = setInterval(() => {
-      setQuoteVisible(false);
-      setTimeout(() => {
-        setQuoteIndex((i) => (i + 1) % quotes.length);
-        setQuoteVisible(true);
-      }, 400);
-    }, 10000);
+    const timer = setInterval(() => setQuoteIndex((i) => (i + 1) % quotes.length), 10000);
     return () => clearInterval(timer);
   }, []);
+
+  const quoteText = `"${quotes[quoteIndex].text}" —— ${quotes[quoteIndex].author}`;
+  const quoteContainerRef = useRef<HTMLDivElement>(null);
+  const quoteMeasureRef = useRef<HTMLSpanElement>(null);
+  const [quoteOverflow, setQuoteOverflow] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const container = quoteContainerRef.current;
+      const measure = quoteMeasureRef.current;
+      if (container && measure) setQuoteOverflow(measure.scrollWidth > container.clientWidth);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    if (quoteContainerRef.current) ro.observe(quoteContainerRef.current);
+    window.addEventListener("resize", check);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", check);
+    };
+  }, [quoteIndex]);
 
   // 动态 SEO：每个工具页独立的 title / description / OG / JSON-LD
   const seoTitle = tool
@@ -111,14 +124,30 @@ export function AppLayout() {
               </span>
             )}
           </div>
-          {/* 名言轮播：中等屏幕以上显示 */}
-          <div className="hidden min-w-0 flex-1 items-center justify-center px-4 md:flex">
-            <p
-              className={`max-w-full truncate text-sm italic text-white/90 transition-opacity duration-500 ${quoteVisible ? "opacity-100" : "opacity-0"}`}
-              title={`${quotes[quoteIndex].text} —— ${quotes[quoteIndex].author}`}
-            >
-              "{quotes[quoteIndex].text}" <span className="text-white/70">—— {quotes[quoteIndex].author}</span>
-            </p>
+          {/* 激励语轮播：文字放得下静止显示，放不下才向左滚动，悬停暂停 */}
+          <div
+            ref={quoteContainerRef}
+            className="relative min-w-0 flex-1 overflow-hidden px-2"
+            title={quoteText}
+          >
+            {/* 隐藏的测量副本：用来判断文字是否超出容器宽度 */}
+            <span ref={quoteMeasureRef} aria-hidden="true" className="invisible absolute whitespace-nowrap text-sm italic text-white/90">
+              {quoteText}
+            </span>
+            {quoteOverflow ? (
+              <div className="marquee">
+                <div
+                  key={quoteIndex}
+                  className="marquee-track text-sm italic text-white/90"
+                  style={{ animationDuration: `${Math.max(12, Math.min(40, quotes[quoteIndex].text.length * 0.55))}s` }}
+                >
+                  <span className="marquee-item">{quoteText}</span>
+                  <span className="marquee-item" aria-hidden="true">{quoteText}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="w-full truncate text-center text-sm italic text-white/90">{quoteText}</p>
+            )}
           </div>
           <div className="flex items-center gap-1 text-white/90">
             <button
