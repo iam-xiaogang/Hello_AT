@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS blog_articles (
     category TEXT NOT NULL DEFAULT '',
     summary TEXT NOT NULL DEFAULT '',
     content TEXT NOT NULL DEFAULT '',
+    published_at TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
@@ -82,6 +83,10 @@ def _now() -> str:
 
 def _ensure_table(conn: sqlite3.Connection) -> None:
     conn.execute(SCHEMA)
+    # 旧库迁移：补 published_at 列
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(blog_articles)").fetchall()}
+    if "published_at" not in cols:
+        conn.execute("ALTER TABLE blog_articles ADD COLUMN published_at TEXT NOT NULL DEFAULT ''")
     conn.commit()
 
 
@@ -91,6 +96,7 @@ def _row_to_article(row: sqlite3.Row, include_content: bool) -> dict:
         "title": row["title"],
         "category": row["category"],
         "summary": row["summary"],
+        "published_at": row["published_at"],
         "created_at": row["created_at"],
         "updated_at": row["updated_at"],
     }
@@ -146,9 +152,9 @@ def create_article(data) -> dict:
     try:
         _ensure_table(conn)
         cur = conn.execute(
-            "INSERT INTO blog_articles (title, category, summary, content, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (data.title, data.category, data.summary, data.content, now, now),
+            "INSERT INTO blog_articles (title, category, summary, content, published_at, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (data.title, data.category, data.summary, data.content, data.published_at, now, now),
         )
         conn.commit()
         article_id = cur.lastrowid
@@ -169,10 +175,11 @@ def update_article(article_id: int, data) -> Optional[dict]:
             "category": data.category if data.category is not None else row["category"],
             "summary": data.summary if data.summary is not None else row["summary"],
             "content": data.content if data.content is not None else row["content"],
+            "published_at": data.published_at if data.published_at is not None else row["published_at"],
         }
         conn.execute(
-            "UPDATE blog_articles SET title = ?, category = ?, summary = ?, content = ?, updated_at = ? WHERE id = ?",
-            (fields["title"], fields["category"], fields["summary"], fields["content"], _now(), article_id),
+            "UPDATE blog_articles SET title = ?, category = ?, summary = ?, content = ?, published_at = ?, updated_at = ? WHERE id = ?",
+            (fields["title"], fields["category"], fields["summary"], fields["content"], fields["published_at"], _now(), article_id),
         )
         conn.commit()
     finally:

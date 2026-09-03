@@ -10,6 +10,7 @@ interface ArticleListItem {
   title: string;
   category: string;
   summary: string;
+  published_at: string;
   created_at: string;
   updated_at: string;
 }
@@ -43,6 +44,12 @@ function formatDate(iso: string): string {
     minute: "2-digit",
     hour12: false,
   }).format(d);
+}
+
+/** 展示时间：优先发布时间 published_at，否则用创建时间 */
+function articleTime(a: { published_at: string; created_at: string }): string {
+  if (a.published_at) return a.published_at.replace("T", " ").slice(0, 16);
+  return formatDate(a.created_at);
 }
 
 function CategoryBadge({ category }: { category: string }) {
@@ -206,7 +213,7 @@ export default function Blog() {
                   <CategoryBadge category={a.category} />
                 </div>
                 {a.summary && <p className="line-clamp-2 text-sm text-slate-500 dark:text-slate-400">{a.summary}</p>}
-                <p className="text-xs text-slate-400">{formatDate(a.updated_at)}</p>
+                <p className="text-xs text-slate-400">{articleTime(a)}</p>
               </button>
             ))
           )}
@@ -230,7 +237,7 @@ export default function Blog() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{a.title}</h1>
           <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
             <CategoryBadge category={a.category} />
-            <span>{formatDate(a.updated_at)}</span>
+            <span>{articleTime(a)}</span>
           </div>
           {a.summary && <p className="border-l-2 border-violet-200 pl-3 text-sm text-slate-500 dark:border-violet-500/40 dark:text-slate-400">{a.summary}</p>}
           <div className="mt-2">
@@ -335,6 +342,7 @@ function EditorForm({ editing, token, onSaved, onCancel }: {
   const [title, setTitle] = useState(editing?.title ?? "");
   const [category, setCategory] = useState(editing?.category ?? "");
   const [summary, setSummary] = useState(editing?.summary ?? "");
+  const [publishedAt, setPublishedAt] = useState(editing?.published_at ?? "");
   const [content, setContent] = useState(editing?.content ?? "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -390,7 +398,7 @@ function EditorForm({ editing, token, onSaved, onCancel }: {
     }
     setSaving(true);
     try {
-      const body = JSON.stringify({ title, category, summary, content });
+      const body = JSON.stringify({ title, category, summary, content, published_at: publishedAt });
       if (editing) {
         await apiFetch(`/tools/blog/articles/${editing.id}`, {
           method: "PUT",
@@ -431,6 +439,17 @@ function EditorForm({ editing, token, onSaved, onCancel }: {
       <div>
         <label className="label" htmlFor="blog-summary">摘要</label>
         <textarea id="blog-summary" className="field min-h-16" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="列表页展示的一句话摘要" />
+      </div>
+      <div>
+        <label className="label" htmlFor="blog-published-at">发布时间（留空则用创建时间）</label>
+        <input
+          id="blog-published-at"
+          className="field"
+          type="datetime-local"
+          value={publishedAt}
+          onChange={(e) => setPublishedAt(e.target.value)}
+        />
+        <p className="mt-1 text-xs text-slate-400">可以补发旧文章或调整排序时间，北京时间。</p>
       </div>
       <div>
         <div className="mb-1 flex items-center justify-between gap-2">

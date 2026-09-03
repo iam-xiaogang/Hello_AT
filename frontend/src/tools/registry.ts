@@ -16,6 +16,7 @@ import { meta as textUtils } from "./text-utils/meta";
 import { meta as imageProcessor } from "./image-processor/meta";
 import { meta as aiText } from "./ai-text/meta";
 import { meta as tts } from "./tts/meta";
+import { meta as aiChat } from "./ai-chat/meta";
 import type { ToolDefinition } from "./types";
 
 // 组件全部路由级懒加载：每个工具一个独立 chunk，访问对应路由时才加载。
@@ -37,6 +38,7 @@ const TextUtils = lazy(() => import("./text-utils"));
 const ImageProcessor = lazy(() => import("./image-processor"));
 const AiText = lazy(() => import("./ai-text"));
 const Tts = lazy(() => import("./tts"));
+const AiChat = lazy(() => import("./ai-chat"));
 
 // This is the sole front-end registration point. To add a tool, create its
 // directory (index.tsx + meta.ts) and add one entry here; navigation, welcome
@@ -59,6 +61,7 @@ export const tools: ToolDefinition[] = [
   { meta: imageProcessor, Component: ImageProcessor },
   { meta: aiText, Component: AiText },
   { meta: tts, Component: Tts },
+  { meta: aiChat, Component: AiChat },
 ];
 
 // AI tools and the blog lead the sidebar regardless of their registration order below.

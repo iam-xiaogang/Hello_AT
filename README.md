@@ -119,7 +119,8 @@ docker compose up --build
 - 图片批量处理：多图批量转格式（JPEG/PNG/WebP）、缩放、圆角、文字水印，Canvas 纯前端处理，可打包 ZIP 下载（jszip）。
 - 文字转语音：浏览器本地语音合成朗读文本（Web Speech API），支持中文等多种语音，纯前端零成本。
 - AI 文本处理：翻译（中英日韩等）、润色、总结要点、纠错，后端代理 DeepSeek 等 OpenAI 兼容接口（密钥在服务端，`TOOLBOX_AI_API_KEY`）。
+- AI 对话：流式聊天（SSE），Markdown 回复，会话历史存本地（`backend/app/tools/ai_chat/`）。
 - 图片压缩：上传 JPEG、PNG、WebP 到 FastAPI，经 Pillow 压缩并下载，覆盖前后端联调、上传、加载及错误提示流程。
 - 文档转换：PDF → Word（保留排版）、PDF → 文本、Word → 文本，上传至 FastAPI 经 pdf2docx / PyMuPDF / python-docx 转换并下载。
-- 博客：工具箱内置博客（`backend/app/tools/blog/`），文章存 SQLite，列表 + 分类筛选 + Markdown 详情阅读，后台管理（新建/编辑/删除，`TOOLBOX_BLOG_ADMIN_TOKEN` 保护），支持图片上传（`POST /api/tools/blog/images`，保存于 `backend/data/blog-images/`，编辑器中上传/拖拽自动插入 Markdown 链接）。
+- 博客：工具箱内置博客（`backend/app/tools/blog/`），文章存 SQLite，列表 + 分类筛选 + Markdown 详情阅读，后台管理（新建/编辑/删除，`TOOLBOX_BLOG_ADMIN_TOKEN` 保护），支持图片上传（`POST /api/tools/blog/images`，保存于 `backend/data/blog-images/`，编辑器中上传/拖拽自动插入 Markdown 链接），支持自定义发布时间 `published_at`。
 - 访问者统计：前端埋点记录每次页面加载的访问者，后端用离线 ip2region 数据库把 IP 定位到中国省份（`backend/app/tools/visitor_tracker/data/ip2region_v4.xdb`），SQLite 持久化（`backend/data/toolbox.db`，自动创建、已 gitignore），只展示中国大陆访问者并按 IP 去重；数据分库存储、展示时合并：工具箱访问记本地 SQLite，博客（h3blog）访问通过 `TOOLBOX_VISITOR_API_BASE` 配置的 `/api/visitor/*` 接口读取博客库，页面显示两库总和；省份分布以中国地图展示（ECharts，地图 GeoJSON 在 `frontend/public/maps/china.json`），有访问记录的省份上色、无记录为白色。
