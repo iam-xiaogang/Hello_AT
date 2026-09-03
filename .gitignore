@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .env
+backend/app/core/.env
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
