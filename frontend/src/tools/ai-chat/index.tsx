@@ -82,6 +82,7 @@ export default function AiChat() {
       const decoder = new TextDecoder();
       let buf = "";
       let acc = "";
+      let streamError = "";
       setMessages((msgs) => [...msgs, { role: "assistant", content: "" }]);
 
       while (true) {
@@ -96,7 +97,8 @@ export default function AiChat() {
             const data = line.slice(6).trim();
             if (data === "[DONE]") continue;
             try {
-              const obj = JSON.parse(data) as { content?: string };
+              const obj = JSON.parse(data) as { content?: string; error?: string };
+              if (obj.error) streamError = obj.error;
               if (obj.content) acc += obj.content;
             } catch {
               /* 忽略无法解析的分片 */
@@ -109,6 +111,7 @@ export default function AiChat() {
           return copy;
         });
       }
+      if (streamError) throw new Error(streamError);
       saveHistory([...history, { role: "assistant", content: acc }]);
     } catch (e) {
       toast(e instanceof Error ? e.message : "对话失败。", "error");

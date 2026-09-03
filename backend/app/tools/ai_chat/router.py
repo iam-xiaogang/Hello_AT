@@ -20,6 +20,8 @@ async def chat(request: Request, req: ChatRequest) -> StreamingResponse:
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="请求过于频繁，请稍后再试。")
     if settings.ai_api_token and request.headers.get("X-Api-Token") != settings.ai_api_token:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="无效的访问令牌。")
+    if not settings.ai_api_key:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未配置 AI API Key（TOOLBOX_AI_API_KEY）。")
 
     messages = [m.model_dump() for m in req.messages]
     return StreamingResponse(
