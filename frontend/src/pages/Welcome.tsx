@@ -3,6 +3,14 @@ import { Clock, Server, Star } from "lucide-react";
 import { tools } from "../tools/registry";
 import { useToolPrefs } from "../state/toolPrefs";
 
+// 首页网格的分类排序：AI 工具、博客排在最前，其余保持注册顺序
+const CATEGORY_PRIORITY = ["AI 工具", "博客"];
+const sortedTools = [...tools].sort((a, b) => {
+  const ia = CATEGORY_PRIORITY.indexOf(a.meta.category);
+  const ib = CATEGORY_PRIORITY.indexOf(b.meta.category);
+  return (ia === -1 ? CATEGORY_PRIORITY.length : ia) - (ib === -1 ? CATEGORY_PRIORITY.length : ib);
+});
+
 function ToolCard({ id, path, name, description, icon: Icon, accent, needsBackend }: {
   id: string; path: string; name: string; description: string;
   icon: typeof tools[number]["meta"]["icon"]; accent: string; needsBackend: boolean;
@@ -93,7 +101,7 @@ export default function Welcome() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {tools.map(({ meta }) => (
+        {sortedTools.map(({ meta }) => (
           <ToolCard
             key={meta.id}
             id={meta.id}
